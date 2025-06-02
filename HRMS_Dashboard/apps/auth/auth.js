@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const secret = "3nc4ypt!0n"
 
 exports.authenticateToken = (req, res, next) => {
+  // console.log("authenticateToken",req.headers['authorization'])
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
   if (token == null) return res.sendStatus(401)
@@ -28,7 +29,7 @@ exports.authenticateToken = (req, res, next) => {
 exports.checkRole = (role) => {
   return (req, res, next) => {
       console.log("user",req.user.bAccess);
-      console.log("user",req.user);
+      // console.log("user",req.user);
       if (!role.includes(req.user.bAccess)) {
           return res.status(200).send({
               status: false,

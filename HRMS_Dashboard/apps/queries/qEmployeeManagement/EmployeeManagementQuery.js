@@ -281,8 +281,8 @@ WHERE dtl.pklEmpCode = ?`,
     misc.fklBranch AS branch, 
     misc.vsPAN AS PAN, 
     emp.dtDateOfJoining AS joiningDate, 
-    supervisor1.vsSupervisorName AS supervisorName1, 
-    supervisor2.vsSupervisorName AS supervisorName2, 
+    -- supervisor1.vsSupervisorName AS supervisorName1, 
+    -- supervisor2.vsSupervisorName AS supervisorName2, 
     qualification.vsQualification AS qualification,
     location.pklLocationId AS locationId, 
     location.vsGeolocationName AS current_working_location
@@ -326,10 +326,8 @@ LEFT JOIN
     nw_mams_qualification AS qualification ON emp.fklQualification = qualification.pklQualificationId
 LEFT JOIN 
     nw_mams_geolocation AS location ON emp.fklLocationId = location.pklLocationId
-LEFT JOIN 
-    nw_mams_supervisor AS supervisor1 ON emp.fklSuperviosrId1 = supervisor1.pklSupervisorId
-LEFT JOIN 
-    nw_mams_supervisor AS supervisor2 ON emp.fklSuperviosrId2 = supervisor2.pklSupervisorId
+    -- LEFT JOIN nw_mams_supervisor AS supervisor1 ON emp.fklSuperviosrId1 = supervisor1.pklSupervisorId
+    -- LEFT JOIN nw_mams_supervisor AS supervisor2 ON emp.fklSuperviosrId2 = supervisor2.pklSupervisorId
 WHERE 
     personal.pklEmployeeRegId = ?;
 `,

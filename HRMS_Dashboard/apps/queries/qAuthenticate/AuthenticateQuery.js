@@ -19,8 +19,9 @@ const query = {
      checkUser:`select * from nw_loms_login_access_permission where fklLoginId =?`,
     updateUserNull:`update nw_loms_login_access_permission set bAccessHrms = ? ,dtUpdatedAtHrms= CURDATE() ,updatedByHrms=? where fklLoginId=?`,
     insertUserNull:`insert into nw_loms_login_access_permission (bAccessHrms, dtUpdatedAtHrms,updatedByHrms,fklLoginId) values (?,CURDATE(),?,?)`,
-    getAdminbyUsername: `SELECT access.bAccessHrms as bAccess, login.* FROM nw_loms_login login 
-    LEFT JOIN nw_loms_login_access_permission access on login.pklLoginId = access.fklLoginId WHERE vsLoginName = ? and bEnabled=1`,
+    getAdminbyUsername: `select pklLoginId,vsPassword,vsLoginName,bEnabled as bAccess from nw_loms_login where vsLoginName = ? `,
+    // getAdminbyUsername: `SELECT access.bAccessHrms as bAccess, login.* FROM nw_loms_login login 
+    // LEFT JOIN nw_loms_login_access_permission access on login.pklLoginId = access.fklLoginId WHERE vsLoginName = ? and bEnabled=1`,
     checkSystemUser:`select login.vsLoginName from nw_loms_login as login 
         inner join nw_loms_login_role role on role.fklLoginId = login.pklLoginId 
         inner join nw_mams_role mams on mams.pklRoleId = role.fklRoleId 

@@ -534,15 +534,15 @@ exports.master = co.wrap(async function (postParam) {
         resultObj.location = queryResultObj.location
       }
       //supervisor
-      try {
-        queryResultObj.supervisor = await connection.query(mysqlCon, query.supervisor, [])
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-      }
-      if (queryResultObj.supervisor !== null && queryResultObj.supervisor !== undefined && queryResultObj.supervisor.length > 0) {
-        resultObj.supervisor = queryResultObj.supervisor
-      }
+      // try {
+      //   queryResultObj.supervisor = await connection.query(mysqlCon, query.supervisor, [])
+      // } catch (error) {
+      //   console.error(error);
+      //   throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      // }
+      // if (queryResultObj.supervisor !== null && queryResultObj.supervisor !== undefined && queryResultObj.supervisor.length > 0) {
+      //   resultObj.supervisor = queryResultObj.supervisor
+      // }
     }
     if (queryResultObj.prefetch) {
       resultObj.formDisabled = true

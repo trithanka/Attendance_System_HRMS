@@ -11,7 +11,7 @@ exports.get = co.wrap(async function (postParam) {
       mysqlDB = await connection.getDB();
     } catch (error) {
       console.log(error);
-      throw new Error('Internal Server Error Dashboard-10');
+      throw new Error('Internal Server Error Dashboard-10',error);
     }
 
     try {
@@ -20,7 +20,7 @@ exports.get = co.wrap(async function (postParam) {
         queryResultObj.employeeCount = await connection.query(mysqlDB, query.employeeCount, [])
         console.log(queryResultObj.employeeCount);
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-1');
       }
       if (queryResultObj.employeeCount !== null && queryResultObj.employeeCount !== undefined && queryResultObj.employeeCount.length > 0) {
         resultObj.employeeCount = queryResultObj.employeeCount[0].count
@@ -30,7 +30,7 @@ exports.get = co.wrap(async function (postParam) {
         queryResultObj.leaveRequestPending = await connection.query(mysqlDB, query.leaveRequestPending, [])
 
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-2');
       }
       if (queryResultObj.leaveRequestPending !== null && queryResultObj.leaveRequestPending !== undefined && queryResultObj.leaveRequestPending.length > 0) {
         resultObj.leaveRequestPending = queryResultObj.leaveRequestPending[0].count
@@ -39,7 +39,7 @@ exports.get = co.wrap(async function (postParam) {
       try {
         queryResultObj.leaveRequestDecided = await connection.query(mysqlDB, query.leaveRequestDecided, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-3');
       }
       if (queryResultObj.leaveRequestDecided !== null && queryResultObj.leaveRequestDecided !== undefined && queryResultObj.leaveRequestDecided.length > 0) {
         resultObj.leaveRequestDecided = queryResultObj.leaveRequestDecided[0].count
@@ -48,7 +48,7 @@ exports.get = co.wrap(async function (postParam) {
       try {
         queryResultObj.leaveRequestRejected = await connection.query(mysqlDB, query.leaveRequestRejected, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-4');
       }
       if (queryResultObj.leaveRequestRejected !== null && queryResultObj.leaveRequestRejected !== undefined && queryResultObj.leaveRequestRejected.length > 0) {
         resultObj.leaveRequestRejected = queryResultObj.leaveRequestRejected[0].count
@@ -58,7 +58,7 @@ exports.get = co.wrap(async function (postParam) {
         queryResultObj.leaveRequestApproved = await connection.query(mysqlDB, query.leaveRequestApproved, [])
 
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-5');
       }
       if (queryResultObj.leaveRequestApproved !== null && queryResultObj.leaveRequestApproved !== undefined && queryResultObj.leaveRequestApproved.length > 0) {
         resultObj.leaveRequestApproved = queryResultObj.leaveRequestApproved[0].count
@@ -67,7 +67,7 @@ exports.get = co.wrap(async function (postParam) {
       try {
         queryResultObj.genderWise = await connection.query(mysqlDB, query.genderWise, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-6');
       }
       if (queryResultObj.genderWise !== null && queryResultObj.genderWise !== undefined && queryResultObj.genderWise.length > 0) {
         resultObj.genderWise = queryResultObj.genderWise
@@ -78,7 +78,7 @@ exports.get = co.wrap(async function (postParam) {
       try {
         queryResultObj.ageWise = await connection.query(mysqlDB, query.ageWise, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-7');
       }
       if (queryResultObj.ageWise !== null && queryResultObj.ageWise !== undefined && queryResultObj.ageWise.length > 0) {
         resultObj.ageWise = queryResultObj.ageWise
@@ -89,7 +89,7 @@ exports.get = co.wrap(async function (postParam) {
       try {
         queryResultObj.leaveCommonReason = await connection.query(mysqlDB, query.leaveCommonReason, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-8');
       }
       if (queryResultObj.leaveCommonReason !== null && queryResultObj.leaveCommonReason !== undefined && queryResultObj.leaveCommonReason.length > 0) {
         resultObj.leaveCommonReason = queryResultObj.leaveCommonReason
@@ -101,7 +101,7 @@ exports.get = co.wrap(async function (postParam) {
         queryResultObj.holidays = await connection.query(mysqlDB, query.holidays, [])
       } catch (error) {
         console.error(error)
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-9');
       }
       if (queryResultObj.holidays !== null && queryResultObj.holidays !== undefined && queryResultObj.holidays.length > 0) {
         resultObj.holidays = queryResultObj.holidays
@@ -112,7 +112,7 @@ exports.get = co.wrap(async function (postParam) {
       try {
         queryResultObj.leaveTodayCount = await connection.query(mysqlDB, query.leaveTodayCount, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-00',error);
       }
       if (queryResultObj.leaveTodayCount !== null && queryResultObj.leaveTodayCount !== undefined && queryResultObj.leaveTodayCount.length > 0) {
         resultObj.leaveTodayCount = queryResultObj.leaveTodayCount[0].count
@@ -122,7 +122,7 @@ exports.get = co.wrap(async function (postParam) {
         queryResultObj.qualificationWise = await connection.query(mysqlDB, query.qualificationWise, [])
       } catch (error) {
         console.error(error)
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-11');
       }
       if (queryResultObj.qualificationWise !== null && queryResultObj.qualificationWise !== undefined && queryResultObj.qualificationWise.length > 0) {
         resultObj.qualificationWise = queryResultObj.qualificationWise[0].count
@@ -131,7 +131,7 @@ exports.get = co.wrap(async function (postParam) {
       try {
         queryResultObj.presentToday = await connection.query(mysqlDB, query.presentToday, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-12');
       }
       if (queryResultObj.presentToday !== null && queryResultObj.presentToday !== undefined && queryResultObj.presentToday.length > 0) {
         resultObj.presentToday = queryResultObj.presentToday[0].count
@@ -140,7 +140,7 @@ exports.get = co.wrap(async function (postParam) {
         queryResultObj.departmentGenderWise = await connection.query(mysqlDB, query.departmentGenderWise, [])
       } catch (error) {
         console.error(error)
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-13');
       }
       if (queryResultObj.departmentGenderWise !== null && queryResultObj.departmentGenderWise !== undefined && queryResultObj.departmentGenderWise.length > 0) {
         resultObj.departmentGenderWise = queryResultObj.departmentGenderWise
@@ -151,7 +151,7 @@ exports.get = co.wrap(async function (postParam) {
       try {
         queryResultObj.districtWise = await connection.query(mysqlDB, query.districtWise, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-14');
       }
       if (queryResultObj.districtWise !== null && queryResultObj.districtWise !== undefined && queryResultObj.districtWise.length > 0) {
         resultObj.districtWise = queryResultObj.districtWise
@@ -163,7 +163,7 @@ exports.get = co.wrap(async function (postParam) {
         queryResultObj.leavesToday = await connection.query(mysqlDB, query.leavesToday, [])
       } catch (error) {
         console.error(error)
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-15');
       }
       if (queryResultObj.leavesToday !== null && queryResultObj.leavesToday !== undefined && queryResultObj.leavesToday.length > 0) {
         resultObj.leavesToday = queryResultObj.leavesToday
@@ -175,7 +175,7 @@ exports.get = co.wrap(async function (postParam) {
         queryResultObj.activeStatusCount = await connection.query(mysqlDB, query.activeStatusCount, [])
       } catch (error) {
         console.error(error)
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-16');
       }
       if (queryResultObj.activeStatusCount !== null && queryResultObj.activeStatusCount !== undefined && queryResultObj.activeStatusCount.length > 0) {
         resultObj.activeStatusCount = queryResultObj.activeStatusCount[0].count
@@ -184,7 +184,7 @@ exports.get = co.wrap(async function (postParam) {
         queryResultObj.regignationCount = await connection.query(mysqlDB, query.regignationCount, [])
       } catch (error) {
         console.error(error)
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-17');
       }
       if (queryResultObj.regignationCount !== null && queryResultObj.regignationCount !== undefined && queryResultObj.regignationCount.length > 0) {
         resultObj.regignationCount = queryResultObj.regignationCount[0].count
@@ -226,9 +226,10 @@ exports.attendanceRateDepartmentWise = co.wrap(async function (postParam) {
 
       try {
         queryResultObj.departmentWiseLeave = await connection.query(mysqlDB, query.departmentWiseLeave, [])
+        console.log(queryResultObj.departmentWiseLeave)
       } catch (error) {
         console.error(error)
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-200');
       }
       if (queryResultObj.departmentWiseLeave !== null && queryResultObj.departmentWiseLeave !== undefined && queryResultObj.departmentWiseLeave.length > 0) {
         resultObj.departmentWiseLeave = queryResultObj.departmentWiseLeave
@@ -238,7 +239,7 @@ exports.attendanceRateDepartmentWise = co.wrap(async function (postParam) {
       try {
         queryResultObj.internalDepartment = await connection.query(mysqlDB, query.internalDepartment, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error Dashboard-18');
       }
       if (queryResultObj.internalDepartment !== null && queryResultObj.internalDepartment !== undefined && queryResultObj.internalDepartment.length > 0) {
         resultObj.internalDepartment = queryResultObj.internalDepartment
@@ -279,7 +280,8 @@ exports.getEmployeeGroup = co.wrap(async function (postParam) {
       try {
         queryResultObj.departmentWiseCount = await connection.query(mysqlDB, query.departmentWiseCount, [])
       } catch (error) {
-        throw new Error('Internal Server Error Dashboard-20');
+        console.log("error-----",error)
+        throw new Error('Internal Server Error Dashboard-19');
       }
       if (queryResultObj.departmentWiseCount !== null && queryResultObj.departmentWiseCount !== undefined && queryResultObj.departmentWiseCount.length > 0) {
         resultObj.departmentWiseCount = queryResultObj.departmentWiseCount
@@ -337,7 +339,7 @@ exports.attendanceChart = co.wrap(async function (postParam) {
           queryResultObj.departments = await connection.query(mysqlDB, query.departments, [])
         } catch (error) {
           console.error(error)
-          throw new Error('Internal Server Error Dashboard-20');
+          throw new Error('Internal Server Error Dashboard-21');
         }
         resultObj.data = []
         for (let i = 0; i < queryResultObj.departments.length; i++) {
@@ -347,7 +349,7 @@ exports.attendanceChart = co.wrap(async function (postParam) {
 
           } catch (error) {
             console.error(error)
-            throw new Error('Internal Server Error Dashboard-20');
+            throw new Error('Internal Server Error Dashboard-22');
           }
           if (queryResultObj.attendanceChart !== null && queryResultObj.attendanceChart !== undefined && queryResultObj.attendanceChart.length > 0) {
             resultObj.data.push(
@@ -395,7 +397,7 @@ exports.absenteeism = co.wrap(async function (postParam) {
           queryResultObj.absenteeism = await connection.query(mysqlDB, query.absenteeism, [postParam.month, postParam.month])
         } catch (error) {
           console.error(error)
-          throw new Error('Internal Server Error Dashboard-20');
+          throw new Error('Internal Server Error Dashboard-23');
         }
         if (queryResultObj.absenteeism !== null && queryResultObj.absenteeism !== undefined && queryResultObj.absenteeism.length > 0) {
           resultObj.data = queryResultObj.absenteeism
@@ -517,12 +519,10 @@ exports.employerData = co.wrap(async function (postParam) {
 
     } catch (error) {
       console.error(error)
-      throw new Error('Internal Server Error Dashboard-20');
+      throw new Error('Internal Server Error Dashboard-24');
     }
 
     resultObj.status = "Success";
-
-
 
     return resultObj;
   } catch (error) {
@@ -543,7 +543,7 @@ exports.leaveActivitiesId = co.wrap(async function (postParam) {
       mysqlDB = await connection.getDB();
     } catch (error) {
       console.log(error);
-      throw new Error('Internal Server Error Dashboard-10');
+      throw new Error('Internal Server Error Dashboard-10',error);
     }
 
     const { candidateId, startDate, endDate } = postParam;

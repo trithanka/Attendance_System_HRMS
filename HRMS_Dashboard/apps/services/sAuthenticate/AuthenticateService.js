@@ -45,7 +45,7 @@ exports.login = co.wrap(async function (postParam) {
         queryResultObj.loginValid = await connection.query(mysqlDB, query.loginValid, [postParam.username, CreateDBHash(postParam.password)])
       } catch (error) {
         console.log(error)
-        throw new Error('Internal Server Error Dashboard-20');
+        throw new Error('Internal Server Error login-20');
       }
 
       if (queryResultObj.loginValid !== null && queryResultObj.loginValid !== undefined && queryResultObj.loginValid.length > 0) {
@@ -316,322 +316,387 @@ exports.updateUser = async (req, res) => {
 // });
 
 exports.loginNew = co.wrap(async function (postParam) {
-    let mysqlDB = await connection.getDB();
-    let systemUser;
-    if (!mysqlDB) {
-      throw new Error("Error connecting to db");
-    }
-    console.log(postParam)
-    const { username, password } = postParam;
+  let mysqlDB = await connection.getDB();
+  let systemUser;
+  if (!mysqlDB) {
+    throw new Error("Error connecting to db");
+  }
+  console.log(postParam)
+  const { username, password } = postParam;
 
-    try {
-      //chech user 
-      const rows = await connection.query(mysqlDB, query.getAdminbyUsername, [
-        username,
-      ]);
-      if (rows.length === 0) {
-        return ({
-          status: false,
-          message: "Invalid email or password",
-        });
-      }
-      const system = await connection.query(mysqlDB, query.checkSystemUser, [
-        username
-      ]);
-      // console.log("fjfjjfjf",rows[0])
-      if (system.length === 0) {
-        systemUser = false
-        //blocking the user access
-        if (rows[0].bAccess === null) {
-          return ({
-            status: false,
-            message: "You Are Not Authorized to Open This Site",
-          });
-        }
-      } else {
-        systemUser = true
-      }
-      // if (rows.length === 0) {
-      //     return ({
-      //         status: false,
-      //         message: "Invalid email or password",
-      //     });
-      // }
-      const admin = rows[0];
-
-      const encryptedInputPassword = encrypt(password); // Encrypt the input password
-
-      if (encryptedInputPassword !== admin.vsPassword) {
-        return ({ status: false, message: "Invalid username or password" });
-      }
-
-      //generate token
-      const token = jwt.sign(
-        { username: admin.vsLoginName, loginId: admin.pklLoginId, bAccess: admin.bAccess },
-        secret,
-        { expiresIn: "30d" }
-      );
-
-      return ({
-        status: true,
-        message: "Login successful",
-        token: token,
-        access: admin.bAccess,
-        systemUser: systemUser,
-        name: admin.vsLoginName
-      });
-    } catch (error) {
-      console.error(error);
+  try {
+    //chech user 
+    const rows = await connection.query(mysqlDB, query.getAdminbyUsername, [
+      username,
+    ]);
+    if (rows.length === 0) {
       return ({
         status: false,
-        message: error,
+        message: "Invalid email or password",
       });
-    } finally {
-      if (mysqlDB) mysqlDB.release();
     }
-  });
 
-  exports.add = co.wrap(async function (postParam) {
-    let queryResultObj = {};
-    let resultObj = {};
-    let mysqlDB;
+    if (rows[0].bEnabled === 0) {
+      systemUser = false
+    } else if (rows[0].bEnabled === null) {
+      return ({
+        status: false,
+        message: "You Are Not Authorized to Open This Site",
+      });
+    } else {
+      systemUser = true
+    }
+    const admin = rows[0];
+
+    const encryptedInputPassword = encrypt(password); // Encrypt the input password
+
+    if (encryptedInputPassword !== admin.vsPassword) {
+      return ({ status: false, message: "Invalid username or password" });
+    }
+    console.log("admin.bEnabled",admin)
+    
+    //generate token
+    const token = jwt.sign(
+      { username: admin.vsLoginName, loginId: admin.pklLoginId, bAccess: admin.bAccess },
+      secret,
+      { expiresIn: "30d" }
+    );
+
+    return ({
+      status: true,
+      message: "Login successful",
+      token: token,
+      access: admin.bEnabled,
+      systemUser: false,
+      name: admin.vsLoginName
+    });
+  } catch (error) {
+    console.error(error);
+    return ({
+      status: false,
+      message: error,
+    });
+  } finally {
+    if (mysqlDB) mysqlDB.release();
+  }
+});
+// exports.loginNew = co.wrap(async function (postParam) {
+//     let mysqlDB = await connection.getDB();
+//     let systemUser;
+//     if (!mysqlDB) {
+//       throw new Error("Error connecting to db");
+//     }
+//     console.log(postParam)
+//     const { username, password } = postParam;
+
+//     try {
+//       //chech user 
+//       const rows = await connection.query(mysqlDB, query.getAdminbyUsername, [
+//         username,
+//       ]);
+//       if (rows.length === 0) {
+//         return ({
+//           status: false,
+//           message: "Invalid email or password",
+//         });
+//       }
+//       const system = await connection.query(mysqlDB, query.checkSystemUser, [
+//         username
+//       ]);
+//       // console.log("fjfjjfjf",rows[0])
+//       if (system.length === 0) {
+//         systemUser = false
+//         //blocking the user access
+//         if (rows[0].bAccess === null) {
+//           return ({
+//             status: false,
+//             message: "You Are Not Authorized to Open This Site",
+//           });
+//         }
+//       } else {
+//         systemUser = true
+//       }
+//       // if (rows.length === 0) {
+//       //     return ({
+//       //         status: false,
+//       //         message: "Invalid email or password",
+//       //     });
+//       // }
+//       const admin = rows[0];
+
+//       const encryptedInputPassword = encrypt(password); // Encrypt the input password
+
+//       if (encryptedInputPassword !== admin.vsPassword) {
+//         return ({ status: false, message: "Invalid username or password" });
+//       }
+
+//       //generate token
+//       const token = jwt.sign(
+//         { username: admin.vsLoginName, loginId: admin.pklLoginId, bAccess: admin.bAccess },
+//         secret,
+//         { expiresIn: "30d" }
+//       );
+
+//       return ({
+//         status: true,
+//         message: "Login successful",
+//         token: token,
+//         access: admin.bAccess,
+//         systemUser: systemUser,
+//         name: admin.vsLoginName
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       return ({
+//         status: false,
+//         message: error,
+//       });
+//     } finally {
+//       if (mysqlDB) mysqlDB.release();
+//     }
+// });
+
+exports.add = co.wrap(async function (postParam) {
+  let queryResultObj = {};
+  let resultObj = {};
+  let mysqlDB;
+  try {
     try {
-      try {
-        mysqlDB = await connection.getDB();
-      } catch (error) {
-        console.log(error);
-        throw new Error('Internal Server Error Authenticate-10');
-      }
-
-      return resultObj;
+      mysqlDB = await connection.getDB();
     } catch (error) {
       console.log(error);
-      throw new Error('Internal Server Error Authenticate-40');
-    } finally {
-      mysqlDB.release()
+      throw new Error('Internal Server Error Authenticate-10');
     }
-  });
+
+    return resultObj;
+  } catch (error) {
+    console.log(error);
+    throw new Error('Internal Server Error Authenticate-40');
+  } finally {
+    mysqlDB.release()
+  }
+});
 
 
 
-  exports.update = co.wrap(async function (postParam) {
-    let queryResultObj = {};
-    let resultObj = {};
-    let mysqlDB;
+exports.update = co.wrap(async function (postParam) {
+  let queryResultObj = {};
+  let resultObj = {};
+  let mysqlDB;
+  try {
     try {
-      try {
-        mysqlDB = await connection.getDB();
-      } catch (error) {
-        console.log(error);
-        throw new Error('Internal Server Error Authenticate-10');
-      }
-
-      return resultObj;
+      mysqlDB = await connection.getDB();
     } catch (error) {
       console.log(error);
-      throw new Error('Internal Server Error Authenticate-40');
-    } finally {
-      mysqlDB.release()
+      throw new Error('Internal Server Error Authenticate-10');
     }
-  });
 
-  exports.master = co.wrap(async function (postParam) {
-    let queryResultObj = {};
-    let mysqlCon = null;
-    let resultObj = {};
+    return resultObj;
+  } catch (error) {
+    console.log(error);
+    throw new Error('Internal Server Error Authenticate-40');
+  } finally {
+    mysqlDB.release()
+  }
+});
+
+exports.master = co.wrap(async function (postParam) {
+  let queryResultObj = {};
+  let mysqlCon = null;
+  let resultObj = {};
+  try {
     try {
+      mysqlCon = await connection.getDB();
+    } catch (error) {
+      console.error(error);
+      throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+    }
+    if (postParam.bankId) {
       try {
-        mysqlCon = await connection.getDB();
+        queryResultObj.branch = await connection.query(mysqlCon, Query.branch, [postParam.bankId])
       } catch (error) {
         console.error(error);
         throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
       }
-      if (postParam.bankId) {
-        try {
-          queryResultObj.branch = await connection.query(mysqlCon, Query.branch, [postParam.bankId])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.branch !== null && queryResultObj.branch !== undefined && queryResultObj.branch.length > 0) {
-          resultObj.branch = queryResultObj.branch
-        }
-      }
-      if (postParam.branchId) {
-        try {
-          queryResultObj.ifsc = await connection.query(mysqlCon, Query.ifsc, [postParam.branchId])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.ifsc !== null && queryResultObj.ifsc !== undefined && queryResultObj.ifsc.length > 0) {
-          resultObj.ifsc = queryResultObj.ifsc[0].ifsc
-        }
-      } else {
-        try {
-          queryResultObj.district = await connection.query(mysqlCon, Query.district, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.district !== null && queryResultObj.district !== undefined && queryResultObj.district.length > 0) {
-          resultObj.district = queryResultObj.district
-        }
-        try {
-          queryResultObj.gender = await connection.query(mysqlCon, Query.gender, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.gender !== null && queryResultObj.gender !== undefined && queryResultObj.gender.length > 0) {
-          resultObj.gender = queryResultObj.gender
-        }
-        try {
-          queryResultObj.caste = await connection.query(mysqlCon, Query.caste, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.caste !== null && queryResultObj.caste !== undefined && queryResultObj.caste.length > 0) {
-          resultObj.caste = queryResultObj.caste
-        }
-  
-        try {
-          queryResultObj.idType = await connection.query(mysqlCon, Query.idType, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.idType !== null && queryResultObj.idType !== undefined && queryResultObj.idType.length > 0) {
-          resultObj.idType = queryResultObj.idType
-        }
-  
-        try {
-          queryResultObj.marital = await connection.query(mysqlCon, Query.marital, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.marital !== null && queryResultObj.marital !== undefined && queryResultObj.marital.length > 0) {
-          resultObj.marital = queryResultObj.marital
-        }
-  
-        try {
-          queryResultObj.religion = await connection.query(mysqlCon, Query.religion, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.religion !== null && queryResultObj.religion !== undefined && queryResultObj.religion.length > 0) {
-          resultObj.religion = queryResultObj.religion
-        }
-        try {
-          queryResultObj.blood = await connection.query(mysqlCon, Query.blood, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.blood !== null && queryResultObj.blood !== undefined && queryResultObj.blood.length > 0) {
-          resultObj.blood = queryResultObj.blood
-        }
-        try {
-          queryResultObj.state = await connection.query(mysqlCon, Query.state, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.state !== null && queryResultObj.state !== undefined && queryResultObj.state.length > 0) {
-          resultObj.state = queryResultObj.state
-        }
-        try {
-          queryResultObj.relationship = await connection.query(mysqlCon, Query.relationship, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.relationship !== null && queryResultObj.relationship !== undefined && queryResultObj.relationship.length > 0) {
-          resultObj.relationship = queryResultObj.relationship
-        }
-        try {
-          queryResultObj.qualification = await connection.query(mysqlCon, Query.qualification, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.qualification !== null && queryResultObj.qualification !== undefined && queryResultObj.qualification.length > 0) {
-          resultObj.qualification = queryResultObj.qualification
-        }
-        
-        try {
-          queryResultObj.designation = await connection.query(mysqlCon, Query.designation, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.designation !== null && queryResultObj.designation !== undefined && queryResultObj.designation.length > 0) {
-          resultObj.designation = queryResultObj.designation
-        }
-        try {
-          queryResultObj.bank = await connection.query(mysqlCon, Query.bank, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.bank !== null && queryResultObj.bank !== undefined && queryResultObj.bank.length > 0) {
-          resultObj.bank = queryResultObj.bank
-        }
-        try {
-          queryResultObj.location = await connection.query(mysqlCon, Query.location, [])
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
-        }
-        if (queryResultObj.location !== null && queryResultObj.location !== undefined && queryResultObj.location.length > 0) {
-          resultObj.location = queryResultObj.location
-        }
-        
-      }
-      if (queryResultObj.prefetch) {
-        resultObj.formDisabled = true
-        resultObj.prefetch = queryResultObj.prefetch
-      }
-      if (!queryResultObj.prefetch) {
-        resultObj.formDisabled = false
-      }
-      resultObj.status = "success"
-      return resultObj;
-    } catch (error) {
-      console.error(error)
-      throw error;
-    } finally {
-      if (mysqlCon !== null) {
-        mysqlCon.release();
-      }
-      if (queryResultObj !== null) {
-        queryResultObj = null;
+      if (queryResultObj.branch !== null && queryResultObj.branch !== undefined && queryResultObj.branch.length > 0) {
+        resultObj.branch = queryResultObj.branch
       }
     }
-  });
-
-  exports.delete = co.wrap(async function (postParam) {
-    let queryResultObj = {};
-    let resultObj = {};
-    let mysqlDB;
-    try {
+    if (postParam.branchId) {
       try {
-        mysqlDB = await connection.getDB();
+        queryResultObj.ifsc = await connection.query(mysqlCon, Query.ifsc, [postParam.branchId])
       } catch (error) {
-        console.log(error);
-        throw new Error('Internal Server Error Authenticate-10');
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.ifsc !== null && queryResultObj.ifsc !== undefined && queryResultObj.ifsc.length > 0) {
+        resultObj.ifsc = queryResultObj.ifsc[0].ifsc
+      }
+    } else {
+      try {
+        queryResultObj.district = await connection.query(mysqlCon, Query.district, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.district !== null && queryResultObj.district !== undefined && queryResultObj.district.length > 0) {
+        resultObj.district = queryResultObj.district
+      }
+      try {
+        queryResultObj.gender = await connection.query(mysqlCon, Query.gender, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.gender !== null && queryResultObj.gender !== undefined && queryResultObj.gender.length > 0) {
+        resultObj.gender = queryResultObj.gender
+      }
+      try {
+        queryResultObj.caste = await connection.query(mysqlCon, Query.caste, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.caste !== null && queryResultObj.caste !== undefined && queryResultObj.caste.length > 0) {
+        resultObj.caste = queryResultObj.caste
       }
 
-      return resultObj;
+      try {
+        queryResultObj.idType = await connection.query(mysqlCon, Query.idType, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.idType !== null && queryResultObj.idType !== undefined && queryResultObj.idType.length > 0) {
+        resultObj.idType = queryResultObj.idType
+      }
+
+      try {
+        queryResultObj.marital = await connection.query(mysqlCon, Query.marital, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.marital !== null && queryResultObj.marital !== undefined && queryResultObj.marital.length > 0) {
+        resultObj.marital = queryResultObj.marital
+      }
+
+      try {
+        queryResultObj.religion = await connection.query(mysqlCon, Query.religion, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.religion !== null && queryResultObj.religion !== undefined && queryResultObj.religion.length > 0) {
+        resultObj.religion = queryResultObj.religion
+      }
+      try {
+        queryResultObj.blood = await connection.query(mysqlCon, Query.blood, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.blood !== null && queryResultObj.blood !== undefined && queryResultObj.blood.length > 0) {
+        resultObj.blood = queryResultObj.blood
+      }
+      try {
+        queryResultObj.state = await connection.query(mysqlCon, Query.state, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.state !== null && queryResultObj.state !== undefined && queryResultObj.state.length > 0) {
+        resultObj.state = queryResultObj.state
+      }
+      try {
+        queryResultObj.relationship = await connection.query(mysqlCon, Query.relationship, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.relationship !== null && queryResultObj.relationship !== undefined && queryResultObj.relationship.length > 0) {
+        resultObj.relationship = queryResultObj.relationship
+      }
+      try {
+        queryResultObj.qualification = await connection.query(mysqlCon, Query.qualification, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.qualification !== null && queryResultObj.qualification !== undefined && queryResultObj.qualification.length > 0) {
+        resultObj.qualification = queryResultObj.qualification
+      }
+
+      try {
+        queryResultObj.designation = await connection.query(mysqlCon, Query.designation, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.designation !== null && queryResultObj.designation !== undefined && queryResultObj.designation.length > 0) {
+        resultObj.designation = queryResultObj.designation
+      }
+      try {
+        queryResultObj.bank = await connection.query(mysqlCon, Query.bank, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.bank !== null && queryResultObj.bank !== undefined && queryResultObj.bank.length > 0) {
+        resultObj.bank = queryResultObj.bank
+      }
+      try {
+        queryResultObj.location = await connection.query(mysqlCon, Query.location, [])
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");
+      }
+      if (queryResultObj.location !== null && queryResultObj.location !== undefined && queryResultObj.location.length > 0) {
+        resultObj.location = queryResultObj.location
+      }
+
+    }
+    if (queryResultObj.prefetch) {
+      resultObj.formDisabled = true
+      resultObj.prefetch = queryResultObj.prefetch
+    }
+    if (!queryResultObj.prefetch) {
+      resultObj.formDisabled = false
+    }
+    resultObj.status = "success"
+    return resultObj;
+  } catch (error) {
+    console.error(error)
+    throw error;
+  } finally {
+    if (mysqlCon !== null) {
+      mysqlCon.release();
+    }
+    if (queryResultObj !== null) {
+      queryResultObj = null;
+    }
+  }
+});
+
+exports.delete = co.wrap(async function (postParam) {
+  let queryResultObj = {};
+  let resultObj = {};
+  let mysqlDB;
+  try {
+    try {
+      mysqlDB = await connection.getDB();
     } catch (error) {
       console.log(error);
-      throw new Error('Internal Server Error Authenticate-40');
-    } finally {
-      mysqlDB.release()
+      throw new Error('Internal Server Error Authenticate-10');
     }
-  });
+
+    return resultObj;
+  } catch (error) {
+    console.log(error);
+    throw new Error('Internal Server Error Authenticate-40');
+  } finally {
+    mysqlDB.release()
+  }
+});
 
 

@@ -3,9 +3,9 @@ const Router = express.Router();
 const co = require('co');
 
 const service = require('../../services/sEmployeeManagement/EmployeeManagementService');
-const { checkRole } = require('../../auth/auth');
+const { checkRole, authenticateToken } = require('../../auth/auth');
 
-Router.post('/get', checkRole([0,1]),(req, res) => {
+Router.post('/get',(req, res) => {
     var result = [];
     co(async function () {
         try {
@@ -47,7 +47,7 @@ Router.post('/getReleased',checkRole([0,1]), (req, res) => {
     });
 });
 
-Router.post('/device/get', checkRole([1]),(req, res) => {
+Router.post('/device/get', (req, res) => {
     var result = [];
     co(async function () {
         try {
@@ -62,7 +62,7 @@ Router.post('/device/get', checkRole([1]),(req, res) => {
 });
 
 //for current date device data
-Router.post('/device/getall',checkRole([1]), (req, res) => {
+Router.post('/device/getall', (req, res) => {
     var result = [];
     co(async function () {
         try {
@@ -76,7 +76,7 @@ Router.post('/device/getall',checkRole([1]), (req, res) => {
     });
 });
 
-Router.post('/device/update',checkRole([1]), (req, res) => {
+Router.post('/device/update',authenticateToken,checkRole([1]), (req, res) => {
     var result = [];
     co(async function () {
         try {
@@ -90,7 +90,7 @@ Router.post('/device/update',checkRole([1]), (req, res) => {
     });
 });
 
-Router.post('/attendance/get',checkRole([0,1]), (req, res) => {
+Router.post('/attendance/get', (req, res) => {
     var result = [];
     co(async function () {
         try {
@@ -204,7 +204,8 @@ Router.post('/master', (req, res) => {
     });
 });
 
-Router.post('/getById', checkRole([0,1]),(req, res) => {
+Router.post('/getById', (req, res) => {
+    console.log("req.user",req.user)
     var result = [];
     co(async function () {
         try {
@@ -219,7 +220,7 @@ Router.post('/getById', checkRole([0,1]),(req, res) => {
 });
 
 
-Router.post('/update',checkRole([1]), (req, res) => {
+Router.post('/update',authenticateToken,checkRole([1]), (req, res) => {
     var result = [];
     co(async function () {
         try {

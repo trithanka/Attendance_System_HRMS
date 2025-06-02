@@ -103,11 +103,23 @@ WHERE
     staff.bReleased=0
     AND leaves.dtLeaveDate = CURDATE();`,
     presentToday: `SELECT COUNT(*) AS count FROM nw_staff_attendance WHERE vsDate = CURDATE() AND bInOut = 0`,
-    departmentWiseCount: `SELECT  idep.pklInternalDepartmentId AS departmentId,idep.vsInternalDepartmentName AS department, COUNT(*) AS count FROM nw_employee_employment_dtls edtl 
-    LEFT JOIN nw_mams_internal_department idep ON idep.pklInternalDepartmentId = edtl.vsDepartment
-    LEFT JOIN nw_staff_attendance_dtl staff ON staff.fklEmployeeRegId = edtl.pklEmployeeRegId
-    WHERE staff.bReleased = 0
-    GROUP BY department`,
+    departmentWiseCount: `SELECT  
+    idep.pklInternalDepartmentId AS departmentId,
+    idep.vsInternalDepartmentName AS department, 
+    COUNT(*) AS count
+FROM nw_employee_employment_dtls edtl 
+LEFT JOIN nw_mams_internal_department idep 
+    ON idep.pklInternalDepartmentId = edtl.vsDepartment
+LEFT JOIN nw_staff_attendance_dtl staff 
+    ON staff.fklEmployeeRegId = edtl.pklEmployeeRegId
+WHERE staff.bReleased = 0
+GROUP BY idep.pklInternalDepartmentId, idep.vsInternalDepartmentName;
+`,
+    // departmentWiseCount: `SELECT  idep.pklInternalDepartmentId AS departmentId,idep.vsInternalDepartmentName AS department, COUNT(*) AS count FROM nw_employee_employment_dtls edtl 
+    // LEFT JOIN nw_mams_internal_department idep ON idep.pklInternalDepartmentId = edtl.vsDepartment
+    // LEFT JOIN nw_staff_attendance_dtl staff ON staff.fklEmployeeRegId = edtl.pklEmployeeRegId
+    // WHERE staff.bReleased = 0
+    // GROUP BY department`,
     designationWiseCount: `SELECT edtl.vsDesignation AS department, des.vsDesignationName as designationName, COUNT(*) AS count 
     FROM nw_employee_employment_dtls edtl 
     LEFT JOIN nw_mams_designation des ON pklDesignationId = edtl.vsDesignation
@@ -119,12 +131,16 @@ WHERE
     holidays: `SELECT pklLeaveId AS id, vsLeaveName AS leaveName, DATE_FORMAT(dtLeaveDate, '%Y-%m-%d') AS leaveDate FROM nw_mams_leave  WHERE dtLeaveDate > NOW() LIMIT 0,4`,
     leaveCommonReason: `SELECT vsLeaveHeader AS reason, COUNT(*) AS count FROM nw_staff_attendance_leave_applications LEFT JOIN nw_mams_leave_header ON fklReasonId = pklLeaveHeaderId GROUP BY vsLeaveHeader`,
     absenteeism: `SELECT((SELECT COUNT(*) FROM nw_staff_attendance_leave_applications WHERE MONTH(dtLeaveDate) = ?)/(SELECT COUNT(*) FROM nw_staff_attendance WHERE MONTH(vsDate) = ?)) * 10  AS absenteeism`,
-    departmentWiseLeave: `SELECT vsDepartment AS Id, vsInternalDepartmentName AS department, vsType AS type, COUNT(*) AS count FROM nw_mams_internal_department dept
-    LEFT JOIN nw_employee_employment_dtls edtl ON edtl.vsDepartment = dept.pklInternalDepartmentId
-    LEFT JOIN nw_staff_attendance_dtl adtl ON edtl.fklEmployeeRegId = adtl.fklEmployeeRegId
-    LEFT JOIN nw_staff_attendance_leave_applications lapply ON lapply.fklEmpCode = adtl.pklEmpCode
-    WHERE lapply.bApproval = 1 AND MONTH (lapply.dtLeaveDate) = MONTH(CURRENT_DATE())
-    GROUP BY vsInternalDepartmentName, vsType;`,
+    departmentWiseLeave: `SELECT dept.pklInternalDepartmentId AS Id, 
+    dept.vsInternalDepartmentName AS department, 
+    vsType AS type, 
+    COUNT(*) AS count 
+FROM nw_mams_internal_department dept
+LEFT JOIN nw_employee_employment_dtls edtl ON edtl.vsDepartment = dept.pklInternalDepartmentId
+LEFT JOIN nw_staff_attendance_dtl adtl ON edtl.fklEmployeeRegId = adtl.fklEmployeeRegId
+LEFT JOIN nw_staff_attendance_leave_applications lapply ON lapply.fklEmpCode = adtl.pklEmpCode
+WHERE lapply.bApproval = 1 AND MONTH(lapply.dtLeaveDate) = MONTH(CURRENT_DATE())
+GROUP BY dept.pklInternalDepartmentId, dept.vsInternalDepartmentName, vsType;`,
     internalDepartment: `SELECT vsInternalDepartmentName AS department FROM nw_mams_internal_department`,
 
     designationWishData: `SELECT personal.pklEmployeeRegId AS registrationId, staff.vsEmpName AS empId, personal.vsFirstName AS fisrtName, personal.vsMiddleName AS middleName, personal.vslastName AS lastName,
