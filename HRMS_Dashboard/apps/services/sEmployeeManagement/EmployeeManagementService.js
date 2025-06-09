@@ -329,7 +329,7 @@ exports.add = co.wrap(async function (postParam, user) {
         // }
         /************************************************************************* */
         try {
-          queryResultObj.leaveAlloted = await connection.query(mysqlCon, query.leaveAlloted, [queryResultObj.personal.insertId, 15, 15, 180])
+          queryResultObj.leaveAlloted = await connection.query(mysqlCon, query.leaveAlloted, [queryResultObj.personal.insertId, 12, 10, 0])
         } catch (error) {
           console.error(error);
           throw new Error("Internal Server Error(" + error.message + "-SEnmsEmployeeEAS-G10)");

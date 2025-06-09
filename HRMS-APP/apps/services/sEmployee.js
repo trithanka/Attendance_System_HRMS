@@ -17,7 +17,7 @@ exports.getEmployeeDtl = co.wrap(async function (postParam) {
   
       try {
         queryResultObj = await connection.query(mysqlDB, query.getEmpDtl, [postParam.empId.replace('EMP00000','')]);
-        console.log("her---------",queryResultObj)
+        // console.log("her---------",queryResultObj)
       } catch (error) {
         console.error(error);
         console.error(error)
