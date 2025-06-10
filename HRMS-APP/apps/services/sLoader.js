@@ -30,13 +30,13 @@ exports.Loader = co.wrap(async function (postParam) {
         console.error(error);
         throw new Error("Internal Server Error sAuthenticate-Loader20");
       }
-      console.log("here--------1", postParam.empId.replace('EMP00000',''))
+      // console.log("here--------1", postParam.empId.replace('EMP00000',''))
       if (queryResultObj.personal === null || queryResultObj.personal === undefined || queryResultObj.personal.length === 0 ) {
         resultObj.message = "Personal Details is not associated with your account. Kindly Contact HR Admin"
         resultObj.status = "failed";
         return resultObj;
       }
-      console.log("here--------2")
+      // console.log("here--------2")
       try {
         queryResultObj.inOut = await connection.query(mysqlDB, query.inOut, [postParam.empId.replace('EMP00000','')]);
       } catch (error) {

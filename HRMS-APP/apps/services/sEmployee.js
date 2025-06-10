@@ -3,7 +3,6 @@ const connection = require("../../JOS/DALMYSQLConnection");
 const query = require("../queries/qEmployee");
 
 exports.getEmployeeDtl = co.wrap(async function (postParam) {
-  console.log("post--------", postParam)
     let queryResultObj = {};
     let resultObj = {};
     let mysqlDB;

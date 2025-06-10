@@ -21,11 +21,13 @@ exports.LeavesCheck = co.wrap(async function (postParam) {
     }
 
     try {
+      console.log(postParam.empId.replace('EMP00000', ''), new Date().getFullYear(), "postParam.empId.replace('EMP00000', ''), new Date().getFullYear()")
       queryResultObj.leavesCheck = await connection.query(mysqlDB, query.leavesCheck, [postParam.empId.replace('EMP00000', ''), new Date().getFullYear()]);
     } catch (error) {
       console.error(error);
       throw new Error("Internal Server Error sAuthenticate-Loader20");
     }
+    console.log(queryResultObj.leavesCheck, "queryResultObj.leavesCheck")
 
     if (queryResultObj.leavesCheck === null || queryResultObj.leavesCheck === undefined || queryResultObj.leavesCheck.length === 0) {
       resultObj.message = "No Leaves associated with your account"
